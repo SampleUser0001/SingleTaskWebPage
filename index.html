@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>シングルタスク管理</title>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    >
+</head>
+<body>
+<div id="app">
+    <section class="section">
+        <div class="container">
+            <h1 class="title">{{ title }}</h1>
+
+            <div class="box">
+                <h2 class="title is-4">概要</h2>
+            </div>
+            <div class="box">
+                <h2 class="title is-4">登録</h2>
+                <input class="input" type="text" placeholder="タスクを入力">
+                <button class="button is-info is-outlined is-fullwidth">登録</button>
+            </div>
+            <div class="box">
+                <h2 class="title is-4">今やってるタスク</h2>
+                <p class="title is-5">タスク名</p>
+                <p class="notification">{{ running.task }}</p>
+
+                <p class="title is-5">メモ</p>
+                <textarea class="textarea" placeholder="メモを入力"></textarea>
+
+                <div class="fixed-grid has-2-cols">
+                    <div class="grid buttons">
+                        <button class="button is-info is-outlined cell">退避</button>
+                        <button class="button is-success cell">終わった！</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h2 class="title is-4">退避</h2>
+            </div>
+            <div class="box">
+                <h2 class="title is-4">終わった！</h2>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+    const { createApp } = Vue;
+    createApp({
+        data() {
+            return {
+                title: 'シングルタスク管理',
+                running: {
+                    id: null,
+                    task: 'aaa',
+                    memo: '',
+                },
+                stash: [],
+                done: [],
+
+            }
+        },
+        methods: {}
+    }).mount('#app');
+</script>
+</body>
+</html>
