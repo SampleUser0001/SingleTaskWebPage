@@ -9,40 +9,60 @@
     >
 </head>
 <body>
-<div id="app">
+<div id="app" class="content">
     <section class="section">
         <div class="container">
-            <h1 class="title">{{ title }}</h1>
+            <section class="hero is-link">
+            <div class="hero-body">
+                <p class="title">{{ title }}</p>
+            </div>
+            </section>
 
             <div class="box">
-                <h2 class="title is-4">概要</h2>
+                <h2>概要</h2>
             </div>
             <div class="box">
-                <h2 class="title is-4">登録</h2>
-                <input class="input" type="text" placeholder="タスクを入力">
-                <button class="button is-info is-outlined is-fullwidth">登録</button>
+                <h2>登録</h2>
+                <input class="input" type="text" placeholder="タスクを入力" v-model="newTaskName">
+                <button class="button is-info is-outlined is-fullwidth" @click="newTask()">登録</button>
             </div>
-            <div class="box">
-                <h2 class="title is-4">今やってるタスク</h2>
-                <p class="title is-5">タスク名</p>
+            <div class="box" v-if="viewRunning">
+                <h2>今やってるタスク</h2>
+                <h3>タスク名</h3>
                 <p class="notification">{{ running.task }}</p>
 
-                <p class="title is-5">メモ</p>
-                <textarea class="textarea" placeholder="メモを入力"></textarea>
+                <h3>メモ</h3>
+                <textarea class="textarea" placeholder="メモを入力" v-model="running.memo"></textarea>
 
                 <div class="fixed-grid has-2-cols">
                     <div class="grid buttons">
-                        <button class="button is-info is-outlined cell">退避</button>
-                        <button class="button is-success cell">終わった！</button>
+                        <button class="button is-info is-outlined cell" @click="push()">退避</button>
+                        <button class="button is-success cell" @click="complete()">終わった！</button>
                     </div>
                 </div>
             </div>
 
-            <div class="box">
-                <h2 class="title is-4">退避</h2>
+            <div class="box" v-if="stash.length > 0">
+                <h2>退避</h2>
+                <div class="content">
+                    <ul>
+                        <li v-for="item in stash" :key="item.id">
+                            {{ item.task }}
+                            <button class="delete is-small" @click="popFrom(stash, item.id)"></button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div class="box">
-                <h2 class="title is-4">終わった！</h2>
+            <div class="box" v-if="done.length > 0">
+                <h2>終わった！</h2>
+                <div class="content">
+                    <ul>
+                        <li v-for="item in done" :key="item.id">
+                            {{ item.task }}
+                            <button class="delete is-small" @click="popFrom(done, item.id)"></button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
@@ -55,9 +75,11 @@
         data() {
             return {
                 title: 'シングルタスク管理',
+                newTaskName: '',
+                viewRunning: false,
                 running: {
                     id: null,
-                    task: 'aaa',
+                    task: '',
                     memo: '',
                 },
                 stash: [],
@@ -65,8 +87,53 @@
 
             }
         },
-        methods: {}
+        methods: {
+            newTask() {
+                if (!this.newTaskName.trim()) {
+                    return;
+                }
+                const task = {
+                    id: crypto.randomUUID(),
+                    task: this.newTaskName,
+                    memo: '',
+                };
+                this.push();
+                this.running = task;
+                this.viewRunning = true;
+                this.newTaskName = '';
+            },
+            push() {
+                if (!this.running.id) {
+                    return;
+                } 
+                this.stash.push(this.running);
+                this.clearRunning();
+            },
+            popFrom(l, id) {
+                this.push();
+                const index = l.findIndex(item => item.id === id);
+                console.log(index);
+                if (index !== -1) {
+                    this.running = l[index];
+                    l.splice(index, 1);
+                }
+            },
+            complete() {
+                if (!this.running.id) {
+                    return;
+                }
+                this.done.push(this.running);
+                this.clearRunning();
+            },
+            clearRunning() {
+                this.running = { id: null, task: '', memo: '' };
+            }
+        }
     }).mount('#app');
+
+    const pushTask = () => {
+        app.stash.push(newTask(task));
+    };
 </script>
 </body>
 </html>
